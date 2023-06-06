@@ -26,6 +26,8 @@ to_remove: list[SerialDevice] = []
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+print("Started udp server on %s:%s" % (DEFAULT_UDP_DESTINATION, DEFAULT_UDP_PORT))
+
 while True:
     now = time.time()
     if next_port_check < now:

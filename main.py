@@ -1,0 +1,46 @@
+import time
+
+import serial.tools.list_ports
+
+DEFAULT_BAUD_RATE = 115200
+DEFAULT_UDP_PORT = 5005
+
+
+class SerialDevice:
+    def __init__(self, port, baud_rate: int = DEFAULT_BAUD_RATE):
+        self.port = port
+        self.serial = serial.Serial(port.device, baud_rate, timeout=1)
+        self.serial.flushInput()
+        self.serial.flushOutput()
+
+    def read(self):
+        return self.serial.readline()
+
+
+devices: dict[str, SerialDevice] = {}
+
+next_port_check = time.time()
+to_remove: list[SerialDevice] = []
+
+while True:
+    now = time.time()
+    if next_port_check < now:
+        next_port_check = now + 5
+        ports = serial.tools.list_ports.comports(include_links=False)
+        for port in ports:
+            if port.device not in devices:
+                devices[port.device] = SerialDevice(port)
+                print(f'New device {port.device}')
+
+    for device in devices.values():
+        try:
+            data = device.read()
+            if data:
+                print(data)
+        except serial.SerialException:
+            print(f'Device {device.port.device} disconnected')
+            to_remove.append(device)
+
+    for rm in to_remove:
+        del devices[rm.port.device]
+    to_remove.clear()

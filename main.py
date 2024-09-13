@@ -12,8 +12,8 @@ class SerialDevice:
     def __init__(self, port, baud_rate: int = DEFAULT_BAUD_RATE):
         self.port = port
         self.serial = serial.Serial(port.device, baud_rate, timeout=1)
-        self.serial.flushInput()
-        self.serial.flushOutput()
+        # self.serial.flushInput()
+        # self.serial.flushOutput()
 
     def read(self):
         return self.serial.readline()

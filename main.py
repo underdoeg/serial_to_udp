@@ -50,3 +50,4 @@ while True:
     for rm in to_remove:
         del devices[rm.port.device]
     to_remove.clear()
+    time.sleep(1/60)

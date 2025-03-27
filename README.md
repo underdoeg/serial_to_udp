@@ -1,4 +1,4 @@
-# Forwards serial data unmodified to UDP
+# Forwards serial data unmodified (or if valid as JSON) to UDP
 
 Developed to use microcontrollers with godot engine without relying on custom native modules.
 
@@ -21,6 +21,27 @@ func _process(delta: float) -> void:
         print("Received data: %s" % packet.get_string_from_utf8())
 ```
 
+Parse JSON example
+
+```gdscript
+
+func _process(delta: float) -> void:
+	serial_server.poll()
+	if serial_server.is_connection_available():
+		var packet := serial_server.take_connection().get_packet()
+		var json_string = packet.get_string_from_utf8()
+		print("Received data: %s" % json_string)
+		
+		var json = JSON.new()
+		var error = json.parse(json_string)
+		if error == OK:
+			var data_received = json.data
+			if data_received.has("data"):
+				var d = data_received["data"]
+				print(d)
+		else:
+			print("JSON Parse Error: ", json.get_error_message(), " in ", json_string, " at line ", json.get_error_line())
+```
 ------
 
 TODO

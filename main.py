@@ -1,5 +1,6 @@
 import socket
 import time
+import json
 
 import serial.tools.list_ports
 
@@ -55,7 +56,20 @@ while True:
         try:
             data = device.read()
             if data:
-                formatted_data = f"{device.port.device}: {data}"
+                try:
+                    # Try to parse as JSON
+                    parsed_data = json.loads(data)
+                    json_data = {
+                        "device": device.port.device,
+                        "data": parsed_data  # Use parsed JSON as a nested object
+                    }
+                except json.JSONDecodeError:
+                    # If not valid JSON, treat as plain string
+                    json_data = {
+                        "device": device.port.device,
+                        "data": data
+                    }
+                formatted_data = json.dumps(json_data)
                 print(f'Device {device.port.device} send data: {data}')
                 sock.sendto(formatted_data.encode('utf-8'), (DEFAULT_UDP_DESTINATION, DEFAULT_UDP_PORT))
         except serial.SerialException:

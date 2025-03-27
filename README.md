@@ -1,4 +1,4 @@
-# Forwards serial data unmodified to UDP
+# Forwards serial data unmodified (or if valid as JSON) to UDP
 
 Developed to use microcontrollers with godot engine without relying on custom native modules.
 

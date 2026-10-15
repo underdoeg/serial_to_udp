@@ -17,6 +17,9 @@ parser.add_argument('--exclude', nargs='+',
                     help="keywords on product or manufacturer string that will skip a device if matched")
 parser.add_argument('--include', nargs='+',
                     help="keywords on product or manufacturer string that will only include a device if matched")
+parser.add_argument("--udp-port", type=int, default=DEFAULT_UDP_PORT)
+parser.add_argument("--udp-destination", type=str, default=DEFAULT_UDP_DESTINATION)
+parser.add_argument("--baud-rate", type=int, default=DEFAULT_BAUD_RATE)
 args = parser.parse_args()
 
 devices: dict[str, SerialDevice] = {}
@@ -25,7 +28,7 @@ is_first_loop = True
 
 
 class SerialDevice:
-    def __init__(self, port, baud_rate: int = DEFAULT_BAUD_RATE):
+    def __init__(self, port, baud_rate: int = args.baud_rate):
         self.port = port
         try:
             self.serial = serial.Serial(port.device, baud_rate, timeout=1)
@@ -50,7 +53,7 @@ to_remove: list[SerialDevice] = []
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-print("Started udp server on %s:%s" % (DEFAULT_UDP_DESTINATION, DEFAULT_UDP_PORT))
+print("Started udp server on %s:%s" % (args.udp_destination, args.udp_port))
 
 
 def port_info(port: ListPortInfo):
@@ -108,7 +111,7 @@ while True:
                     }
                 formatted_data = json.dumps(json_data)
                 print(f'Device {device.port.device} send data: {data}')
-                sock.sendto(formatted_data.encode('utf-8'), (DEFAULT_UDP_DESTINATION, DEFAULT_UDP_PORT))
+                sock.sendto(formatted_data.encode('utf-8'), (args.udp_destination, args.udp_port))
         except serial.SerialException:
             print(f'Device {device.port.device} disconnected')
             to_remove.append(device)

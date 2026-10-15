@@ -80,9 +80,10 @@ while True:
             # continue
             if port.device not in devices:
                 try:
-                    print("attempt to open - ", port_info(port))
+                    # print("attempt to open - ", port_info(port))
                     devices[port.device] = SerialDevice(port)
-                    print(f'New device {port.device}')
+                    print("Opened ", port_info(port))
+                    # print(f'New device {port.device}')
                 except serial.SerialException:
                     if not devices:
                         print(f'Failed to add device {port.device}')

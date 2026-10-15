@@ -23,6 +23,7 @@ devices: dict[str, SerialDevice] = {}
 
 is_first_loop = True
 
+
 class SerialDevice:
     def __init__(self, port, baud_rate: int = DEFAULT_BAUD_RATE):
         self.port = port
@@ -63,12 +64,14 @@ while True:
         ports = serial.tools.list_ports.comports(include_links=False)
         for port in ports:
             if args.exclude and any(
-                    exclude in str(port.product) or exclude in str(port.manufacturer) for exclude in args.exclude):
+                    exclude.lower() in str(port.product).lower() or exclude.lower() in str(port.manufacturer).lower()
+                    for exclude in args.exclude):
                 if is_first_loop or not devices:
                     print("Skipping device due to exclude filter - ", port_info(port))
                 continue
             if args.include and not any(
-                    include in str(port.product) or include in str(port.manufacturer) for include in args.include):
+                    include.lower() in str(port.product).lower() or include.lower() in str(port.manufacturer).lower()
+                    for include in args.include):
                 if is_first_loop or not devices:
                     print("Skipping device due to include filter - ", port_info(port))
                 continue
